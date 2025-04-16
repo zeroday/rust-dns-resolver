@@ -56,8 +56,12 @@ struct Args {
     shuffle: bool,
 
     /// Number of concurrent HTTP requests
-    #[arg(short, long, default_value_t = 100)]
+    #[arg(short = 'H', long, default_value_t = 100)]
     http_concurrency: usize,
+
+    /// Path to check on each host (e.g., "/front/checkIp")
+    #[arg(long, default_value = "/front/checkIp")]
+    status_path: String,
 }
 
 #[derive(Debug, Clone)]
@@ -407,7 +411,6 @@ async fn main() -> Result<()> {
 
     let mut http_completed = 0;
     let http_total = results.len();
-    let path = "/front/checkIp";
 
     // Process HTTP requests in batches
     for chunk in results.chunks(args.http_concurrency) {
@@ -419,7 +422,7 @@ async fn main() -> Result<()> {
             futures.push(check_http_endpoint(
                 &http_client,
                 &result.hostname,
-                path,
+                &args.status_path,
                 Duration::from_secs(3),
             ));
         }
