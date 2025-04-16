@@ -1,0 +1,6 @@
+/target/
+**/*.rs.bk
+*.pdb
+*.db
+*.txt
+Cargo.lock
