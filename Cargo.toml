@@ -8,7 +8,6 @@ anyhow = "1.0"
 chrono = { version = "0.4", features = ["serde"] }
 clap = { version = "4.4", features = ["derive"] }
 futures = "0.3"
-ip2asn = "0.1"
 rand = "0.8"
 reqwest = { version = "0.11", features = ["json", "stream"] }
 rusqlite = { version = "0.29", features = ["bundled"] }
