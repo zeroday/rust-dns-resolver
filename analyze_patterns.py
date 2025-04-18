@@ -3,15 +3,16 @@
 import sqlite3
 import pandas as pd
 import matplotlib.pyplot as plt
-import re
+from datetime import datetime, timedelta
 
 def analyze_patterns():
     # Connect to the database
     conn = sqlite3.connect('dns_results.db')
     
-    # Query to get base domains and their counts
-    pattern_query = """
+    # Query to get pattern counts over time
+    time_query = """
     SELECT 
+        date(timestamp) as date,
         CASE 
             WHEN hostname LIKE 'sunpass.com%' THEN 'sunpass.com'
             WHEN hostname LIKE 'txtag.org%' THEN 'txtag.org'
@@ -22,88 +23,108 @@ def analyze_patterns():
         END as pattern,
         COUNT(*) as count
     FROM dns_results
-    GROUP BY pattern
-    ORDER BY count DESC
+    GROUP BY date, pattern
+    ORDER BY date, count DESC
     """
     
     # Read data into pandas DataFrame
-    df = pd.read_sql_query(pattern_query, conn)
+    df = pd.read_sql_query(time_query, conn)
+    df['date'] = pd.to_datetime(df['date'])
     
     # Print basic statistics
-    print("\n=== Top Hostname Patterns ===")
-    print(f"Total unique patterns: {len(df)}")
-    print(f"Total hostnames: {df['count'].sum()}")
+    print("\n=== Pattern Analysis Over Time ===")
+    print(f"Date range: {df['date'].min()} to {df['date'].max()}")
+    print(f"Total unique patterns: {df['pattern'].nunique()}")
     
-    # Print top 10 patterns
-    print("\nTop 10 Patterns:")
-    for _, row in df.head(10).iterrows():
-        percentage = (row['count'] / df['count'].sum()) * 100
-        print(f"{row['pattern']}: {row['count']} ({percentage:.1f}%)")
+    # Get top 5 patterns overall
+    top_patterns = df.groupby('pattern')['count'].sum().nlargest(5).index
+    print("\nTop 5 Patterns Overall:")
+    for pattern in top_patterns:
+        total = df[df['pattern'] == pattern]['count'].sum()
+        print(f"{pattern}: {total} hostnames")
     
-    # Create visualization
-    plt.figure(figsize=(12, 6))
+    # Create time series visualization
+    plt.figure(figsize=(15, 8))
+    
+    # Plot each top pattern's count over time
+    for pattern in top_patterns:
+        pattern_data = df[df['pattern'] == pattern]
+        plt.plot(pattern_data['date'], pattern_data['count'], 
+                label=pattern, marker='o', linewidth=2)
+    
+    plt.title('Top 5 Hostname Patterns Over Time')
+    plt.xlabel('Date')
+    plt.ylabel('Number of Hostnames')
+    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.grid(True)
+    plt.xticks(rotation=45)
+    
+    plt.tight_layout()
+    plt.savefig('pattern_time_series.png', bbox_inches='tight')
+    plt.close()
+    print("\nTime series plot saved as pattern_time_series.png")
+    
+    # Create stacked area chart
+    plt.figure(figsize=(15, 8))
+    
+    # Pivot the data for stacked area chart
+    pivot_df = df.pivot(index='date', columns='pattern', values='count').fillna(0)
+    
+    # Get top 10 patterns by total count
+    top_10_patterns = df.groupby('pattern')['count'].sum().nlargest(10).index
+    pivot_df = pivot_df[top_10_patterns]
+    
+    # Calculate percentages
+    pivot_df = pivot_df.div(pivot_df.sum(axis=1), axis=0) * 100
+    
+    # Create stacked area chart
+    plt.stackplot(pivot_df.index, pivot_df.T, labels=pivot_df.columns)
+    
+    plt.title('Percentage Distribution of Top 10 Patterns Over Time')
+    plt.xlabel('Date')
+    plt.ylabel('Percentage of Total Hostnames')
+    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.grid(True, alpha=0.3)
+    plt.xticks(rotation=45)
+    
+    plt.tight_layout()
+    plt.savefig('pattern_stacked_area.png', bbox_inches='tight')
+    plt.close()
+    print("\nStacked area chart saved as pattern_stacked_area.png")
+    
+    # Create heatmap of pattern activity
+    plt.figure(figsize=(15, 8))
+    
+    # Create daily pattern matrix
+    heatmap_data = df.pivot_table(
+        index='date',
+        columns='pattern',
+        values='count',
+        fill_value=0
+    )
     
     # Get top 15 patterns
-    top_patterns = df.head(15)
+    top_15_patterns = df.groupby('pattern')['count'].sum().nlargest(15).index
+    heatmap_data = heatmap_data[top_15_patterns]
     
-    # Create bar chart
-    bars = plt.bar(range(len(top_patterns)), 
-                  top_patterns['count'],
-                  color=plt.cm.tab20(range(len(top_patterns))))
+    # Create heatmap
+    plt.imshow(heatmap_data.T, aspect='auto', cmap='YlOrRd')
+    plt.colorbar(label='Number of Hostnames')
     
-    # Add value labels
-    for bar in bars:
-        height = bar.get_height()
-        plt.text(bar.get_x() + bar.get_width()/2., height,
-                f'{int(height):,}',
-                ha='center', va='bottom')
+    # Set labels
+    plt.yticks(range(len(top_15_patterns)), top_15_patterns)
+    plt.xticks(range(len(heatmap_data.index)), 
+              [d.strftime('%Y-%m-%d') for d in heatmap_data.index],
+              rotation=45)
     
-    # Customize the plot
-    plt.title('Top 15 Hostname Patterns')
-    plt.xlabel('Pattern')
-    plt.ylabel('Number of Hostnames')
-    plt.xticks(range(len(top_patterns)), 
-              [pattern[:20] + '...' if len(pattern) > 20 else pattern 
-               for pattern in top_patterns['pattern']],
-              rotation=45, ha='right')
-    
-    # Add percentage labels on the right side
-    ax2 = plt.gca().twinx()
-    ax2.set_ylim(plt.gca().get_ylim())
-    ax2.set_yticklabels([f'{y/df["count"].sum()*100:.1f}%' 
-                        for y in ax2.get_yticks()])
-    ax2.set_ylabel('Percentage of Total')
+    plt.title('Pattern Activity Heatmap')
+    plt.xlabel('Date')
+    plt.ylabel('Pattern')
     
     plt.tight_layout()
-    plt.savefig('top_patterns.png', bbox_inches='tight')
+    plt.savefig('pattern_heatmap.png', bbox_inches='tight')
     plt.close()
-    print("\nPattern distribution plot saved as top_patterns.png")
-    
-    # Create pie chart for top 10 patterns
-    plt.figure(figsize=(12, 8))
-    
-    # Get top 10 patterns and combine the rest into "Other"
-    top_10 = df.head(10)
-    other_count = df['count'].sum() - top_10['count'].sum()
-    
-    if other_count > 0:
-        top_10 = pd.concat([top_10, 
-                           pd.DataFrame({'pattern': ['Other'], 
-                                       'count': [other_count]})])
-    
-    # Create pie chart
-    plt.pie(top_10['count'], 
-            labels=top_10['pattern'],
-            autopct='%1.1f%%',
-            startangle=90,
-            pctdistance=0.85)
-    
-    plt.title('Distribution of Top 10 Hostname Patterns')
-    plt.axis('equal')
-    plt.tight_layout()
-    plt.savefig('pattern_pie.png', bbox_inches='tight')
-    plt.close()
-    print("\nPattern pie chart saved as pattern_pie.png")
+    print("\nPattern activity heatmap saved as pattern_heatmap.png")
     
     conn.close()
 
