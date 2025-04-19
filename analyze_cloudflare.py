@@ -10,20 +10,28 @@ def analyze_cloudflare_usage():
     # Connect to the database
     conn = sqlite3.connect('dns_results.db')
     
-    # Query to get all records with Cloudflare ASN (AS13335)
+    # Query to get all records with Cloudflare ASN (AS13335) and join with status
     query = """
+    WITH cloudflare_hosts AS (
+        SELECT DISTINCT 
+            hostname,
+            ip_address,
+            date(timestamp) as dns_date
+        FROM dns_results
+        WHERE (asn LIKE '%13335%' OR as_name LIKE '%Cloudflare%')
+        AND success = 1
+    )
     SELECT 
-        date(timestamp) as date,
-        hostname,
-        ip_address,
-        asn,
-        as_name,
+        ch.hostname,
+        ch.ip_address,
+        ch.dns_date as date,
+        COALESCE(s.status_code, 0) as status_code,
         COUNT(*) as count
-    FROM dns_results
-    WHERE (asn LIKE '%13335%' OR as_name LIKE '%Cloudflare%')
-    AND success = 1
-    GROUP BY date, hostname, ip_address, asn, as_name
-    ORDER BY date, count DESC
+    FROM cloudflare_hosts ch
+    LEFT JOIN status s ON ch.hostname = s.hostname 
+        AND date(ch.dns_date) = date(s.timestamp)
+    GROUP BY ch.hostname, ch.ip_address, ch.dns_date, s.status_code
+    ORDER BY ch.dns_date, count DESC
     """
     
     # Read data into pandas DataFrame
@@ -104,6 +112,39 @@ def analyze_cloudflare_usage():
     total_dns_records = total_df['total'].iloc[0]
     cloudflare_percentage = (total_records / total_dns_records) * 100
     print(f"\nPercentage of all successful DNS records using Cloudflare: {cloudflare_percentage:.1f}%")
+    
+    # Analyze status codes for Cloudflare hosts
+    status_distribution = df.groupby('status_code')['count'].sum()
+    total_checked = status_distribution.sum()
+    
+    print("\nStatus Code Distribution for Cloudflare Hosts:")
+    for status_code, count in status_distribution.items():
+        percentage = (count / total_checked) * 100
+        status_desc = "Not checked" if status_code == 0 else f"HTTP {status_code}"
+        print(f"{status_desc}: {count} records ({percentage:.1f}%)")
+    
+    # Create status code distribution plot
+    plt.figure(figsize=(12, 6))
+    status_by_date = df.pivot_table(
+        index='date',
+        columns='status_code',
+        values='count',
+        aggfunc='sum',
+        fill_value=0
+    )
+    
+    # Plot stacked area chart
+    status_by_date.plot(kind='area', stacked=True)
+    plt.title('Status Code Distribution Over Time for Cloudflare Hosts')
+    plt.xlabel('Date')
+    plt.ylabel('Number of Records')
+    plt.legend(title='Status Code', 
+              labels=['Not checked' if code == 0 else f'HTTP {code}' for code in status_by_date.columns])
+    plt.grid(True)
+    plt.tight_layout()
+    plt.savefig(f'cloudflare_status_{timestamp}.png')
+    plt.close()
+    print(f"\nStatus code distribution plot saved as cloudflare_status_{timestamp}.png")
     
     conn.close()
 

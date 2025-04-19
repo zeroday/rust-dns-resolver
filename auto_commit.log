@@ -14,3 +14,5 @@ To github.com:zeroday/rust-dns-resolver.git
 To github.com:zeroday/rust-dns-resolver.git
  ! [remote rejected] main -> main (cannot lock ref 'refs/heads/main': is at 3d9edaddfe103aa6904c3a5432e63b2a4ce1f116 but expected 0c522773cd31a5215c43d5c6bd9acccb057824ec)
 error: failed to push some refs to 'github.com:zeroday/rust-dns-resolver.git'
+Everything up-to-date
+Everything up-to-date
