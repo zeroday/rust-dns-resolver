@@ -1,0 +1,2 @@
+*/30 * * * * /home/oliverday/rust-dns-resolver/run_analysis.sh
+0 * * * * /home/oliverday/rust-dns-resolver/run_hourly_visualization.sh 
