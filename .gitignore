@@ -4,3 +4,5 @@
 *.db
 *.txt
 Cargo.lock
+git_auto_commit.log
+asn_migrations.log
