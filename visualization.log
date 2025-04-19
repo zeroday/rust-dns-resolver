@@ -1,0 +1,35 @@
+/home/oliverday/.local/lib/python3.9/site-packages/matplotlib/projections/__init__.py:63: UserWarning: Unable to import Axes3D. This may be due to multiple versions of Matplotlib being installed (e.g. as a system package and as a pip package). As a result, the 3D projection is not available.
+  warnings.warn("Unable to import Axes3D. This may be due to multiple versions of "
+Fetching data from the last hour...
+
+DNS Resolution Statistics:
+Total DNS queries: 2440
+Successful resolutions: 2440
+Unique ASNs found: 4
+
+Top ASNs:
+- AS132203 Tencent Building, Kejizhongyi Avenue (TENCENT-NET-AP-CN): 1783 hostnames
+- AS13335 Cloudflare, Inc. (CLOUDFLARENET): 121 hostnames
+- AS142032 High Family Technology Co., Limited (HFTCL-AS-AP): 1 hostnames
+- AS45102 Alibaba (US) Technology Co., Ltd. (ALIBABA-CN-NET): 1 hostnames
+
+Top 5 IP Addresses:
+- 49.51.74.127 (Unknown ASN - Unknown Provider): 395 hostnames
+- 43.153.109.208 (Unknown ASN - Unknown Provider): 377 hostnames
+- 170.106.178.161 (Unknown ASN - Unknown Provider): 321 hostnames
+- 49.51.35.183 (Unknown ASN - Unknown Provider): 198 hostnames
+- 49.51.242.214 (AS132203 Tencent Building, Kejizhongyi Avenue - TENCENT-NET-AP-CN): 129 hostnames
+
+HTTP Check Statistics:
+Total HTTP checks: 2473
+Successful checks (200): 2431
+Unique status codes: 4
+
+Status Code Distribution:
+- Status 200: 2431 responses
+- Status 0: 40 responses
+- Status 530: 1 responses
+- Status 404: 1 responses
+
+Creating visualizations...
+Visualizations saved as 'last_hour_analysis_20250419_050002.png'

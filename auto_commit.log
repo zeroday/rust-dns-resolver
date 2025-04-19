@@ -8,3 +8,9 @@ Everything up-to-date
 Everything up-to-date
 Everything up-to-date
 Everything up-to-date
+To github.com:zeroday/rust-dns-resolver.git
+   0c52277..3d9edad  main -> main
+[2025-04-19 05:00:01] Successfully pushed changes to GitHub.
+To github.com:zeroday/rust-dns-resolver.git
+ ! [remote rejected] main -> main (cannot lock ref 'refs/heads/main': is at 3d9edaddfe103aa6904c3a5432e63b2a4ce1f116 but expected 0c522773cd31a5215c43d5c6bd9acccb057824ec)
+error: failed to push some refs to 'github.com:zeroday/rust-dns-resolver.git'

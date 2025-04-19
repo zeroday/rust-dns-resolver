@@ -20,7 +20,8 @@ def analyze_cloudflare_usage():
         as_name,
         COUNT(*) as count
     FROM dns_results
-    WHERE asn = '13335'  -- Cloudflare ASN
+    WHERE (asn LIKE '%13335%' OR as_name LIKE '%Cloudflare%')
+    AND success = 1
     GROUP BY date, hostname, ip_address, asn, as_name
     ORDER BY date, count DESC
     """
@@ -98,11 +99,11 @@ def analyze_cloudflare_usage():
         print(f"{ip}: {count} records ({percentage:.1f}%)")
     
     # Calculate percentage of total DNS records using Cloudflare
-    total_query = "SELECT COUNT(*) as total FROM dns_results"
+    total_query = "SELECT COUNT(*) as total FROM dns_results WHERE success = 1"
     total_df = pd.read_sql_query(total_query, conn)
     total_dns_records = total_df['total'].iloc[0]
     cloudflare_percentage = (total_records / total_dns_records) * 100
-    print(f"\nPercentage of all DNS records using Cloudflare: {cloudflare_percentage:.1f}%")
+    print(f"\nPercentage of all successful DNS records using Cloudflare: {cloudflare_percentage:.1f}%")
     
     conn.close()
 
