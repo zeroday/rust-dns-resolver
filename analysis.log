@@ -1,0 +1,38 @@
+/home/oliverday/rust-dns-resolver/analyze_patterns.py:58: FutureWarning: 'H' is deprecated and will be removed in a future version, please use 'h' instead.
+  df['hour'] = df['date'].dt.floor('H')
+
+=== Pattern Analysis Over Time ===
+Showing data for last 12 hours: 2025-04-18 18:18 to 2025-04-19 00:24
+Total unique patterns: 9
+
+Top 5 Patterns Overall:
+sunpass.com: 3326 hostnames
+ncquickpass.com: 571 hostnames
+ohioturnpike.org: 376 hostnames
+paturnpike.com: 161 hostnames
+txtag.org: 149 hostnames
+
+Time Series plot saved as pattern_time_series_last12_20250419_003003.png
+
+Stacked Area plot saved as pattern_stacked_area_last12_20250419_003003.png
+
+Heatmap plot saved as pattern_heatmap_last12_20250419_003005.png
+/home/oliverday/rust-dns-resolver/analyze_patterns.py:58: FutureWarning: 'H' is deprecated and will be removed in a future version, please use 'h' instead.
+  df['hour'] = df['date'].dt.floor('H')
+
+=== Pattern Analysis Over Time ===
+Showing data for last 12 hours: 2025-04-18 18:18 to 2025-04-19 01:30
+Total unique patterns: 9
+
+Top 5 Patterns Overall:
+sunpass.com: 3839 hostnames
+ncquickpass.com: 666 hostnames
+ohioturnpike.org: 497 hostnames
+paturnpike.com: 234 hostnames
+txtag.org: 202 hostnames
+
+Time Series plot saved as pattern_time_series_last12_20250419_013003.png
+
+Stacked Area plot saved as pattern_stacked_area_last12_20250419_013004.png
+
+Heatmap plot saved as pattern_heatmap_last12_20250419_013006.png
