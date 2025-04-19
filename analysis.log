@@ -36,3 +36,29 @@ Time Series plot saved as pattern_time_series_last12_20250419_013003.png
 Stacked Area plot saved as pattern_stacked_area_last12_20250419_013004.png
 
 Heatmap plot saved as pattern_heatmap_last12_20250419_013006.png
+/home/oliverday/.local/lib/python3.9/site-packages/pandas/core/computation/expressions.py:21: UserWarning: Pandas requires version '2.8.4' or newer of 'numexpr' (version '2.7.2' currently installed).
+  from pandas.core.computation.check import NUMEXPR_INSTALLED
+/home/oliverday/.local/lib/python3.9/site-packages/pandas/core/arrays/masked.py:60: UserWarning: Pandas requires version '1.3.6' or newer of 'bottleneck' (version '1.2.1' currently installed).
+  from pandas.core import (
+/home/oliverday/.local/lib/python3.9/site-packages/matplotlib/projections/__init__.py:63: UserWarning: Unable to import Axes3D. This may be due to multiple versions of Matplotlib being installed (e.g. as a system package and as a pip package). As a result, the 3D projection is not available.
+  warnings.warn("Unable to import Axes3D. This may be due to multiple versions of "
+/home/oliverday/rust-dns-resolver/analyze_patterns.py:58: FutureWarning: 'H' is deprecated and will be removed in a future version, please use 'h' instead.
+  df['hour'] = df['date'].dt.floor('H')
+No Bottleneck unit testing available.
+
+=== Pattern Analysis Over Time ===
+Showing data for last 12 hours: 2025-04-18 18:18 to 2025-04-19 01:55
+Total unique patterns: 9
+
+Top 5 Patterns Overall:
+sunpass.com: 4032 hostnames
+ncquickpass.com: 699 hostnames
+ohioturnpike.org: 546 hostnames
+paturnpike.com: 234 hostnames
+txtag.org: 203 hostnames
+
+Time Series plot saved as pattern_time_series_last12_20250419_030719.png
+
+Stacked Area plot saved as pattern_stacked_area_last12_20250419_030719.png
+
+Heatmap plot saved as pattern_heatmap_last12_20250419_030720.png
